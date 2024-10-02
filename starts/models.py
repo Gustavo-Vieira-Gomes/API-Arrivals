@@ -19,7 +19,7 @@ class Start(models.Model):
         ('Para-canoagem', ''),
     ]
 
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=10)
+    category = models.CharField(choices=CATEGORY_CHOICES, max_length=80)
     start_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:

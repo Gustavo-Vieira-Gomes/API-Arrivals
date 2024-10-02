@@ -41,9 +41,9 @@ class Entry(models.Model):
     name4 = models.CharField(max_length=80, blank=True, null=True)
     name5 = models.CharField(max_length=80, blank=True, null=True)
     name6 = models.CharField(max_length=80, blank=True, null=True)
-    boat_class = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
-    sex_category = models.CharField(max_length=10, choices=SEX_CATEGORY_CHOICES)
-    age_category = models.CharField(max_length=15, choices=AGE_CATEGORY_CHOICES)
+    boat_class = models.CharField(max_length=80, choices=CATEGORY_CHOICES)
+    sex_category = models.CharField(max_length=80, choices=SEX_CATEGORY_CHOICES)
+    age_category = models.CharField(max_length=80, choices=AGE_CATEGORY_CHOICES)
     vest_number = models.IntegerField()
 
     def __str__(self) -> str:

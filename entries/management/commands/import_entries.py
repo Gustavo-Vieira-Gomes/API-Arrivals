@@ -16,21 +16,24 @@ class Command(BaseCommand):
             help='url da planilha com as inscrições'
         )
 
-        #parser.add_argument(
-        #    'sheet_name',
-        #    type='str',
-        #    help='Nome da aba que contém as inscrições'
-        #)
+        parser.add_argument(
+            '--sheet_name',
+            type=str,
+            help='Nome da aba que contém as inscrições',
+            required=False
+        )
 
     def handle(self, *args: Any, **options: Any) -> str | None:
         spreadsheet_url = options['spreadsheet_url']
-        #sheet_name = options['sheet_name']
+        sheet_name = options['sheet_name']
 
         gs = gspread.service_account(filename=os.environ.get('TOKEN_GSPREAD'))
         
         sh = gs.open_by_url(spreadsheet_url)
-
-        ws = sh.get_worksheet(1).get_all_records(head=2, value_render_option=gspread.utils.ValueRenderOption(value='UNFORMATTED_VALUE'))
+        if sheet_name:
+            ws = sh.worksheet(sheet_name).get_all_records(head=2, value_render_option=gspread.utils.ValueRenderOption(value='FORMULA'))
+        else:
+            ws = sh.get_worksheet(1).get_all_records(head=2, value_render_option=gspread.utils.ValueRenderOption(value='FORMULA'))
         df = pd.DataFrame(ws)
 
         for entry in df.itertuples():
@@ -42,7 +45,7 @@ class Command(BaseCommand):
                 category = entry[9]
                 age_category = entry[10]           
             
-            self.stdout.write(self.style.NOTICE(entry[2]))
+            self.stdout.write(self.style.NOTICE(entry[2].upper()))
 
             if entry[8] == 'OC6' or entry[8] == 'V6':
                 
@@ -54,7 +57,7 @@ class Command(BaseCommand):
                     name5=entry[6].upper(),
                     name6=entry[7].upper(),
                     boat_class=entry[8],
-                    sex_category=category,
+                    sex_category=category.capitalize(),
                     age_category=age_category,
                     vest_number=entry[11],
                 )
@@ -64,16 +67,17 @@ class Command(BaseCommand):
                     name1=entry[2].upper(),
                     name2=entry[3].upper(),
                     boat_class=entry[8],
-                    sex_category=category,
+                    sex_category=category.capitalize(),
                     age_category=age_category,
                     vest_number=entry[11],
                 )
             
             else:
+                boat_class = entry[8].replace('â', 'a').capitalize() if entry[8] != 'OC1' and entry[8] != 'V1' else entry[8]
                 Entry.objects.create(
                     name1=entry[2].upper(),
-                    boat_class=entry[8],
-                    sex_category=category,
+                    boat_class=boat_class,
+                    sex_category=category.capitalize(),
                     age_category=age_category,
                     vest_number=entry[11],
                 )
