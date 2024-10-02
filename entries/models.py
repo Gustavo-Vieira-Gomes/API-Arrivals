@@ -11,12 +11,12 @@ class Entry(models.Model):
         ('OC1', 'OC1'),
         ('V1', 'V1'),
         ('TUR', 'Turismo'),
-        ('OCI', 'Oceânico Individual'),
-        ('OCD', 'Oceânico Duplo'),
+        ('OCI', 'Oceanico individual'),
+        ('OCD', 'Oceanico duplo'),
         ('LFS', 'Lifesaving'),
-        ('SFKI', 'Surfski Individual'),
-        ('SFKD', 'Surfski Duplo'),
-        ('PCD', 'Para-Canoagem'),
+        ('SFKI', 'Surfski individual'),
+        ('SFKD', 'Surfski duplo'),
+        ('PCD', 'Para-canoagem'),
     ]
 
     SEX_CATEGORY_CHOICES = [

@@ -11,12 +11,12 @@ class Start(models.Model):
         ('OC1', ''),
         ('V1', ''),
         ('Turismo', ''),
-        ('Oceânico individual', ''),
-        ('Oceânico duplo', ''),
+        ('Oceanico individual', ''),
+        ('Oceanico duplo', ''),
         ('Lifesaving', ''),
         ('Surfski individual', ''),
         ('Surfski duplo', ''),
-        ('Para-Canoagem', ''),
+        ('Para-canoagem', ''),
     ]
 
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=10)
