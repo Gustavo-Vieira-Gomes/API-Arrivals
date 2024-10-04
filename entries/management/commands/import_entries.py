@@ -50,22 +50,22 @@ class Command(BaseCommand):
             if entry[8] == 'OC6' or entry[8] == 'V6':
                 
                 Entry.objects.create(
-                    name1=entry[2].upper(),
-                    name2=entry[3].upper(),
-                    name3=entry[4].upper(),
-                    name4=entry[5].upper(),
-                    name5=entry[6].upper(),
-                    name6=entry[7].upper(),
+                    name1=entry[2].upper().strip(),
+                    name2=entry[3].upper().strip(),
+                    name3=entry[4].upper().strip(),
+                    name4=entry[5].upper().strip(),
+                    name5=entry[6].upper().strip(),
+                    name6=entry[7].upper().strip(),
                     boat_class=entry[8],
                     sex_category=category.capitalize(),
                     age_category=age_category,
                     vest_number=entry[11],
                 )
             
-            elif entry[8] == 'OC2' or entry[8] == 'V2':
+            elif entry[8] == 'OC2' or entry[8] == 'V2' or entry[8] == 'Oceanico duplo':
                 Entry.objects.create(
-                    name1=entry[2].upper(),
-                    name2=entry[3].upper(),
+                    name1=entry[2].upper().strip(),
+                    name2=entry[3].upper().strip(),
                     boat_class=entry[8],
                     sex_category=category.capitalize(),
                     age_category=age_category,
@@ -75,7 +75,7 @@ class Command(BaseCommand):
             else:
                 boat_class = entry[8].replace('â', 'a').capitalize() if entry[8] != 'OC1' and entry[8] != 'V1' else entry[8]
                 Entry.objects.create(
-                    name1=entry[2].upper(),
+                    name1=entry[2].upper().strip(),
                     boat_class=boat_class,
                     sex_category=category.capitalize(),
                     age_category=age_category,

@@ -5,10 +5,10 @@ from arrivals.models import Arrival
 from entries.models import Entry
 from starts.models import Start
 import gspread
-import time
 import datetime
 from dotenv import load_dotenv
 import os
+import pdb
 
 
 load_dotenv()
@@ -43,7 +43,7 @@ def build_competitor_name(competitor):
     for name_part in [competitor.name1, competitor.name2, competitor.name3, competitor.name4, competitor.name5, competitor.name6]:
         if name_part:
             name += f'{name_part}\n'
-    return name[:-2]
+    return name[:-1]
 
 
 def find_table_column(wksheet, tablename):
@@ -65,7 +65,8 @@ def get_inserting_position_and_line(wksheet, col):
 
 
 def get_update_position_and_line_by_time(wksheet, col, competing_time):
-    time_col = wksheet.col_values(col + 3)
+    time_col_index = col + 3
+    time_col = wksheet.col_values(time_col_index)
     if time_col[-1] == 'Tempo':
         return '1', len(time_col) + 1, []
     
@@ -77,18 +78,26 @@ def get_update_position_and_line_by_time(wksheet, col, competing_time):
             second = parts[2] if parts[2] != '' else 0
             time = datetime.timedelta(hours=int(parts[0]), minutes=int(parts[1]), seconds=int(parts[2]))
             competing_time_parts = competing_time.split(':')
-            competing_time = datetime.timedelta(hours=int(competing_time_parts[0]), minutes=int(competing_time_parts[1]), seconds=int(competing_time_parts[2]))
-            if competing_time < time:
-                inserting_line = index + 2
-                if inserting_line < len(time_col):
-                    next_lines = wksheet.get(f'{rowcol_to_a1(inserting_line+1, col+1)}:{rowcol_to_a1(len(time_col), col+3)}')
+            competition_time = datetime.timedelta(hours=int(competing_time_parts[0]), minutes=int(competing_time_parts[1]), seconds=int(competing_time_parts[2]))
+            if competition_time < time:
+                inserting_line = index + 1
+                if inserting_line <= len(time_col):
+                    next_lines = wksheet.get(f'{rowcol_to_a1(inserting_line, col+1)}:{rowcol_to_a1(len(time_col), col+3)}')
 
-                arrival_position = index - 3
+                    for lista in next_lines:
+                        classificacao_atual = int(lista[0].replace('º', ''))
+                        nova_classificacao = f'{classificacao_atual + 1}º'
+                        lista[0] = nova_classificacao
+
+                else:
+                    next_lines = None
+
+                arrival_position = index - 2
 
                 return arrival_position, inserting_line, next_lines
 
     else:
-        return f'{len(time_col) - 2}', len(time_col) + 1, []
+        return f'{len(time_col) - 2}', len(time_col) + 1, None
         
 
 def get_update_position_and_line_by_name(wksheet, col, old_name):
@@ -103,19 +112,14 @@ def get_update_position_and_line_by_name(wksheet, col, old_name):
 def update_spreadsheet(wksheet, inserting_line, table_initial_col, table_final_col,values: list):
     try:
         wksheet.update(
-            values=[values],
+            values=values,
             range_name=f'{rowcol_to_a1(inserting_line, table_initial_col + 1)}:{rowcol_to_a1(inserting_line, table_final_col + 1)}'
         )
     except Exception as e:
-        print(f'erro 1 - {e}')
-        time.sleep(1)
-        try:
-            wksheet.update(
-                values=[values],
-                range_name=f'{rowcol_to_a1(inserting_line, table_initial_col + 1)}:{rowcol_to_a1(inserting_line, table_final_col + 1)}'
-            )
-        except Exception as er:
-            print(f'erro 2 - {er}')
+        wksheet.update(
+            values=values,
+            range_name=f'{rowcol_to_a1(inserting_line, table_initial_col + 1)}:{rowcol_to_a1(inserting_line, table_final_col + 1)}'
+        )
 
 
 def handle_existing_arrival(wrong_vest_number, wksheet, table_initial_col, entries):
@@ -129,12 +133,18 @@ def handle_existing_arrival(wrong_vest_number, wksheet, table_initial_col, entri
                 wksheet.batch_clear([f'{rowcol_to_a1(deleting_line, table_initial_col + 1)}:{rowcol_to_a1(deleting_line, table_final_col + 1)}'])
 
                 if deleting_line < len(arrival_names):
-                    print('cheguei aqui')
                     next_lines = wksheet.get(f'{rowcol_to_a1(deleting_line+1, table_initial_col+1)}:{rowcol_to_a1(len(arrival_names), table_final_col+1)}')
+                    for lista in next_lines:
+                        classificacao_atual = int(lista[0].replace('º', ''))
+                        nova_classificacao = f'{classificacao_atual - 1}º'
+                        lista[0] = nova_classificacao
+
                     wksheet.update(
                         values=next_lines,
                         range_name=f'{rowcol_to_a1(deleting_line, table_initial_col+1)}:{rowcol_to_a1(len(arrival_names)-1, table_final_col+1)}'
                     )
+                    wksheet.batch_clear([f'{rowcol_to_a1(len(arrival_names), table_initial_col+1)}:{rowcol_to_a1(len(arrival_names), table_final_col+1)}'])
+                    
 
 
 @receiver(pre_save, sender=Arrival)
@@ -166,20 +176,19 @@ def update_arrival_by_category(sender, instance, **kwargs):
             updating_line = get_update_position_and_line_by_name(wksheet, table_initial_col, wrong_competitor_name)
             table_final_col = table_initial_col
             update_spreadsheet(wksheet, updating_line, table_initial_col+1, table_final_col+1, values=[competitor_name])
-            
+
         else:
             competing_time = calculate_competing_time(wrong_arrival.arrival_time, wrong_boat_class)
             handle_existing_arrival(wrong_vest_number, wrong_wksheet, table_initial_col, entries)
             table_initial_col = find_table_column(wksheet, tablename)
             arrival_position, inserting_line, next_lines = get_update_position_and_line_by_time(wksheet, table_initial_col, competing_time)
             competitor_name = build_competitor_name(competitor)
-            updating_values = [f'{arrival_position}º', competitor_name.upper(), competing_time]
+            updating_values = [[f'{arrival_position}º', competitor_name.upper(), competing_time]]
             table_final_col = table_initial_col + 2
             update_spreadsheet(wksheet, inserting_line, table_initial_col, table_final_col, updating_values)
-            if len(next_lines) > 0:
-                update_spreadsheet(wksheet, inserting_line + 1, table_initial_col, table_final_col, values=next_lines)
-
-
+            if next_lines is not None:
+                wksheet.update(values=next_lines,
+                               range_name=f'{rowcol_to_a1(inserting_line+1, table_initial_col+1)}:{rowcol_to_a1(len(next_lines)+inserting_line, table_final_col+1)}')
 
 
 @receiver(post_save, sender=Arrival)
@@ -196,5 +205,5 @@ def register_arrival_by_category(sender, instance, created, **kwargs):
         competitor_name = build_competitor_name(competitor)
         competing_time = calculate_competing_time(instance.arrival_time, boat_class)
 
-        updating_values = [f'{arrival_position}º', competitor_name.upper(), competing_time]
+        updating_values = [[f'{arrival_position}º', competitor_name.upper(), competing_time]]
         update_spreadsheet(wksheet, inserting_line, table_initial_col, table_final_col, updating_values)
