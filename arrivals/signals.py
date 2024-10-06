@@ -55,7 +55,8 @@ def find_table_column(wksheet, tablename):
 
 
 def get_inserting_position_and_line(wksheet, col):
-    positions_col = wksheet.col_values(col + 1)
+    index_col = col + 1
+    positions_col = wksheet.col_values(index_col)
     if positions_col[-1] == 'Posição':
         arrival_position = 1
     else:

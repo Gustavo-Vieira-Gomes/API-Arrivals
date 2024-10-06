@@ -16,3 +16,14 @@ class ArrivalSerializer(serializers.ModelSerializer):
             return value
         else:
             raise serializers.ValidationError('Não existe competidor inscrito com este número de colete!')
+
+
+class AthleteSerializer(serializers.Serializer):
+    position = serializers.CharField()
+    name = serializers.CharField()
+    time = serializers.CharField()
+
+
+class CategorySerializer(serializers.Serializer):
+    category = serializers.CharField()
+    athletes = AthleteSerializer(many=True)
