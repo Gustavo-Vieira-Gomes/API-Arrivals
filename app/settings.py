@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'arrivals',
     'starts',
     'entries',
+    'cars',
 ]
 
 MIDDLEWARE = [

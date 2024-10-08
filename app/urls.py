@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/v1/', include('arrivals.urls')),
     path('api/v1/', include('starts.urls')),
     path('api/v1/', include('entries.urls')),
+    path('api/v1/', include('cars.urls')),
 ]

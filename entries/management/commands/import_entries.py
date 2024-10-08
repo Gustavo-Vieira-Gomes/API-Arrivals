@@ -1,6 +1,5 @@
 from typing import Any
 from django.core.management.base import BaseCommand, CommandParser
-import gspread.utils
 from entries.models import Entry
 import gspread
 import pandas as pd
