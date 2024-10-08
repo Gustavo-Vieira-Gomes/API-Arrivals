@@ -170,6 +170,8 @@ def update_arrival_by_category(sender, instance, **kwargs):
         wksheet = connecting_gspread(os.environ.get('URL_SPREADSHEET_SUMULA'), boat_class)
         table_initial_col = find_table_column(wrong_wksheet, wrong_tablename)
 
+        start_category = 'OC6' if wrong_boat_class == 'OC6' or wrong_boat_class == 'V6' else 'GERAL'
+
 
         if tablename == wrong_tablename:
             wrong_competitor_name = build_competitor_name(wrong_competitor)
@@ -179,7 +181,7 @@ def update_arrival_by_category(sender, instance, **kwargs):
             update_spreadsheet(wksheet, updating_line, table_initial_col+1, table_final_col+1, values=[competitor_name])
 
         else:
-            competing_time = calculate_competing_time(wrong_arrival.arrival_time, wrong_boat_class)
+            competing_time = calculate_competing_time(wrong_arrival.arrival_time, start_category)
             handle_existing_arrival(wrong_vest_number, wrong_wksheet, table_initial_col, entries)
             table_initial_col = find_table_column(wksheet, tablename)
             arrival_position, inserting_line, next_lines = get_update_position_and_line_by_time(wksheet, table_initial_col, competing_time)
@@ -201,10 +203,11 @@ def register_arrival_by_category(sender, instance, created, **kwargs):
         wksheet = connecting_gspread(os.environ.get('URL_SPREADSHEET_SUMULA'), boat_class)
         table_initial_col = find_table_column(wksheet, tablename)
         table_final_col = table_initial_col + 2
+        start_category = 'OC6' if boat_class == 'OC6' or boat_class == 'V6' else 'GERAL'
 
         arrival_position, inserting_line = get_inserting_position_and_line(wksheet, table_initial_col)
         competitor_name = build_competitor_name(competitor)
-        competing_time = calculate_competing_time(instance.arrival_time, boat_class)
+        competing_time = calculate_competing_time(instance.arrival_time, start_category)
 
         updating_values = [[f'{arrival_position}º', competitor_name.upper(), competing_time]]
         update_spreadsheet(wksheet, inserting_line, table_initial_col, table_final_col, updating_values)
