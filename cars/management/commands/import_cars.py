@@ -60,7 +60,7 @@ class Command(BaseCommand):
                                 full_name=full_name,
                                 phone_number=phone_number,
                                 team=team,
-                                car_identification=licence_plate.strip(),
+                                car_identification=licence_plate.strip().upper(),
                                 car_model=car_models[index].strip(),
                                 cars_per_team=1,
                             )
@@ -75,7 +75,7 @@ class Command(BaseCommand):
                             full_name=full_name,
                             phone_number=phone_number,
                             team=team,
-                            car_identification=car_identification.strip(),
+                            car_identification=car_identification.strip().upper(),
                             car_model=car_model.strip(),
                             cars_per_team=1
                             )
