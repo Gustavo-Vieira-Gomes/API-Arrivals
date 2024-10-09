@@ -9,7 +9,7 @@ class Start(models.Model):
         ('JUNIORES', '')
     ]
 
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=6, unique=True)
+    category = models.CharField(choices=CATEGORY_CHOICES, max_length=10, unique=True)
     start_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
