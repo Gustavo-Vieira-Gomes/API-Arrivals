@@ -41,7 +41,7 @@ class GetPodiumView(APIView):
             sex_category = category_data.sex_category
             age_category = category_data.age_category
             category_name = f'{boat_category.capitalize()} {sex_category.capitalize()} {age_category.title()}'
-            start_category = 'OC6' if boat_category == 'OC6' or boat_category == 'V6' else 'GERAL'
+            start_category = 'OC6' if boat_category == 'OC6' or boat_category == 'V6' else 'JUNIORES' if sex_category == 'JUNIORES' else 'GERAL'
 
             athlete_time = calculate_competing_time(arrival.arrival_time, boat_category)
 

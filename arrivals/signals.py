@@ -170,7 +170,7 @@ def update_arrival_by_category(sender, instance, **kwargs):
         wksheet = connecting_gspread(os.environ.get('URL_SPREADSHEET_SUMULA'), boat_class)
         table_initial_col = find_table_column(wrong_wksheet, wrong_tablename)
 
-        start_category = 'OC6' if wrong_boat_class == 'OC6' or wrong_boat_class == 'V6' else 'GERAL'
+        start_category = 'OC6' if wrong_boat_class == 'OC6' or wrong_boat_class == 'V6' else 'JUNIORES' if sex_category == 'JUNIORES' else 'GERAL'
 
 
         if tablename == wrong_tablename:
@@ -203,7 +203,7 @@ def register_arrival_by_category(sender, instance, created, **kwargs):
         wksheet = connecting_gspread(os.environ.get('URL_SPREADSHEET_SUMULA'), boat_class)
         table_initial_col = find_table_column(wksheet, tablename)
         table_final_col = table_initial_col + 2
-        start_category = 'OC6' if boat_class == 'OC6' or boat_class == 'V6' else 'GERAL'
+        start_category = 'OC6' if boat_class == 'OC6' or boat_class == 'V6' else 'JUNIORES' if sex_category == 'JUNIORES' else 'GERAL'
 
         arrival_position, inserting_line = get_inserting_position_and_line(wksheet, table_initial_col)
         competitor_name = build_competitor_name(competitor)

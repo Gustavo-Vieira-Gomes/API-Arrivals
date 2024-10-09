@@ -6,6 +6,7 @@ class Start(models.Model):
     CATEGORY_CHOICES = [
         ('OC6', ''),
         ('GERAL', ''),
+        ('JUNIORES', '')
     ]
 
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=6, unique=True)
