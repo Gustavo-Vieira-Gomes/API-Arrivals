@@ -52,6 +52,7 @@ class GetPodiumView(APIView):
             position = f'{len(result[category_name]) + 1}º'
 
             athlete_data = {
+                'vest_number': arrival.vest_number,
                 'position': position,
                 'name': athlete_name,
                 'time': athlete_time

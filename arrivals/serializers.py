@@ -19,6 +19,7 @@ class ArrivalSerializer(serializers.ModelSerializer):
 
 
 class AthleteSerializer(serializers.Serializer):
+    vest_number = serializers.IntegerField()
     position = serializers.CharField()
     name = serializers.CharField()
     time = serializers.CharField()
