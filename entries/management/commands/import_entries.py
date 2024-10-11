@@ -61,7 +61,7 @@ class Command(BaseCommand):
                     vest_number=entry[11],
                 )
             
-            elif entry[8] == 'OC2' or entry[8] == 'V2' or entry[8] == 'Oceanico duplo':
+            elif entry[8] == 'OC2' or entry[8] == 'V2' or entry[8] == 'Oceanico duplo' or entry[8] == 'Surfski duplo':
                 Entry.objects.create(
                     name1=entry[2].upper().strip(),
                     name2=entry[3].upper().strip(),
