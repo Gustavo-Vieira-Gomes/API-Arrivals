@@ -20,8 +20,8 @@ class ArrivalSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         time_parts = ret['arrival_time'].split('T')
-        date = '-'.join(time_parts[0].split('-').reverse())
-        time = ':'.join(time_parts[1].split('.')[0].split(':').reverse())
+        date = '-'.join(time_parts[0].split('-')[::-1])
+        time = ':'.join(time_parts[1].split('.')[0].split(':')[::-1])
         ret['arrival_time'] = ' '.join([date, time])
         return ret
 
