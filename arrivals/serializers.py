@@ -19,7 +19,11 @@ class ArrivalSerializer(serializers.ModelSerializer):
         
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        ret['arrival_time'] = ret['arrival_time'].strftime('%d-%m-%Y %H:%M:%S')
+        time_parts = ret['arrival_time'].split('T')
+        date = '-'.join(time_parts[0].split('-').reverse())
+        time = ':'.join(time_parts[1].split('.')[0].split(':').reverse())
+        ret['arrival_time'] = ' '.join([date, time])
+        return ret
 
 class AthleteSerializer(serializers.Serializer):
     vest_number = serializers.IntegerField()
