@@ -17,9 +17,9 @@ class ArrivalSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError('Não existe competidor inscrito com este número de colete!')
         
-    def get_arrival_time(self, obj):
-        return obj.arrival_time.strftime('%d/%m%Y %H:%M:%S')
-
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['arrival_time'] = ret['arrival_time'].strftime('%d-%m-%Y %H:%M:%S')
 
 class AthleteSerializer(serializers.Serializer):
     vest_number = serializers.IntegerField()
