@@ -12,7 +12,7 @@ class Entry(models.Model):
     boat_class = models.CharField(max_length=80)
     sex_category = models.CharField(max_length=80)
     age_category = models.CharField(max_length=80)
-    vest_number = models.IntegerField()
+    vest_number = models.IntegerField(unique=True)
 
     def __str__(self) -> str:
         return self.name1
